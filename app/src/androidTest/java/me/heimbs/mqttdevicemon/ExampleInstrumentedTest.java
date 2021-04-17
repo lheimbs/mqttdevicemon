@@ -1,4 +1,4 @@
-package me.heimbs.mqttdevmon;
+package me.heimbs.mqttdevicemon;
 
 import android.content.Context;
 

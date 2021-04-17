@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# see: https://hivemq.github.io/hivemq-mqtt-client/docs/installation/android/
+-keepclassmembernames class io.netty.** { *; }
+-keepclassmembers class org.jctools.** { *; }

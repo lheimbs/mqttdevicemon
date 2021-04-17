@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.heimbs.mqttdevmon">
+    package="me.heimbs.mqttdevicemon">
 
     <application
         android:allowBackup="true"
@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MQTTDevMon">
-        <activity android:name=".MainActivity">
+        <activity android:name="me.heimbs.mqttdevicemon.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,12 +17,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="me.heimbs.mqttdevicemon.SettingsActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="me.heimbs.mqttdevicemon.MainActivity">
                 <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".MainActivity" />
+                    android:value="me.heimbs.mqttdevicemon.MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,4 +31,5 @@
         </activity>
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

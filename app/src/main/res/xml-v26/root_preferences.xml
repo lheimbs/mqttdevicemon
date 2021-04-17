@@ -22,6 +22,7 @@
         <SeekBarPreference
             app:key="message_interval"
             app:defaultValue="60"
+            android:min="0"
             android:max="300"
             app:showSeekBarValue="true"
             app:title="@string/message_interval_title" />
@@ -30,7 +31,7 @@
             app:defaultValue="battery"
             app:entries="@array/data_entries"
             app:entryValues="@array/data_values"
-            app:key="message_data"
+            app:key="data"
             app:title="@string/message_data_title"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>

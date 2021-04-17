@@ -1,16 +1,10 @@
-package me.heimbs.mqttdevmon;
+package me.heimbs.mqttdevicemon;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.MenuItem;
-import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.EditTextPreference;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
@@ -22,7 +16,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
         if (MainActivity.BAD_SETTINGS) {
-            Snackbar missingSettings = Snackbar.make(findViewById(R.id.settingsCoordinatorLayout), R.string.missing_settings, Snackbar.LENGTH_SHORT);
+            Snackbar missingSettings = Snackbar.make(findViewById(R.id.settingsCoordinatorLayout), R.string.missing_settings, Snackbar.LENGTH_LONG);
             missingSettings.show();
         }
 
@@ -45,18 +39,13 @@ public class SettingsActivity extends AppCompatActivity {
 
             androidx.preference.EditTextPreference editTextPreferencePort = getPreferenceManager().findPreference("connection_port");
             if(editTextPreferencePort != null) {
-                editTextPreferencePort.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
-                    @Override
-                    public void onBindEditText(@NonNull EditText editText) {
-                        editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
-                    }
-                });
+                editTextPreferencePort.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED));
             }
 
             final androidx.preference.EditTextPreference editTextPreferencePassword = getPreferenceManager().findPreference("authentication_password");
             if (editTextPreferencePassword != null) {
                 editTextPreferencePassword.setSummaryProvider(preference -> {
-                    String getPassword = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("password", getString(R.string.authentication_password_not_set));
+                    String getPassword = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("password", getString(R.string.authentication_password_not_set));
 
                     //we assume getPassword is not null
                     assert getPassword != null;
@@ -69,12 +58,9 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 });
 
-                editTextPreferencePassword.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
-                    @Override
-                    public void onBindEditText(@NonNull EditText editText) {
-                        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                        editTextPreferencePassword.setSummaryProvider(preference -> setAsterisks(editText.getText().toString().length()));
-                    }
+                editTextPreferencePassword.setOnBindEditTextListener(editText -> {
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    editTextPreferencePassword.setSummaryProvider(preference -> setAsterisks(editText.getText().toString().length()));
                 });
             }
         }
