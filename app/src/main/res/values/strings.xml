@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">MQTTDevMon</string>
+    <!-- Settings Activity Title -->
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="connection_header">Connection</string>
+    <string name="authentication_header">Authentication</string>
+    <string name="message_header">Message</string>
+
+
+    <!-- Connection Preferences -->
+    <string name="connection_broker_title">Broker</string>
+    <string name="connection_port_title">Port</string>
+
+    <!-- Authentication Preferences -->
+    <string name="authentication_user_title">Username</string>
+    <string name="authentication_password_title">Password</string>
+    <string name="authentication_certificate_title">Certificate</string>
+    <!--  No password set  -->
+    <string name="authentication_password_not_set">Not set</string>
+    <string name="authentication_enable_title">Enable authentication</string>
+
+    <!-- Message Preferences -->
+    <string name="message_topic_title">Topic</string>
+    <string name="message_interval_title">Publish data every n minutes</string>
+    <string name="message_data_title">Device data to send</string>
+    <string name="message_data_summary">Device data to send</string>
+
+    <string name="btn_launch_client">Launch Mqtt Client</string>
+    <string name="btn_launch_service">Launch Mqtt Service detached</string>
+
+    <string name="missing_settings">Switching to settings because both broker and topic need to be set!</string>
+    <string name="settings_desc">Switch to settings</string>
+</resources>

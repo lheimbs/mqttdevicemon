@@ -1,0 +1,10 @@
+<resources>
+    <!-- Data Preference -->
+    <string-array name="data_entries">
+        <item>Battery</item>
+    </string-array>
+
+    <string-array name="data_values">
+        <item>battery</item>
+    </string-array>
+</resources>

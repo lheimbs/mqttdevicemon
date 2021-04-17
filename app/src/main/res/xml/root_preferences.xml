@@ -1,0 +1,60 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="@string/connection_header">
+        <EditTextPreference
+            app:key="connection_broker"
+            app:title="@string/connection_broker_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="connection_port"
+            app:title="@string/connection_port_title"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/message_header">
+        <EditTextPreference
+            app:key="message_topic"
+            app:title="@string/message_topic_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <SeekBarPreference
+            app:key="message_interval"
+            app:defaultValue="60"
+            android:min="0"
+            android:max="300"
+            app:showSeekBarValue="true"
+            app:title="@string/message_interval_title" />
+
+        <ListPreference
+            app:defaultValue="battery"
+            app:entries="@array/data_entries"
+            app:entryValues="@array/data_values"
+            app:key="data"
+            app:title="@string/message_data_title"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/authentication_header">
+        <SwitchPreferenceCompat
+            app:key="authentication_enable"
+            app:title="@string/authentication_enable_title"/>
+
+        <EditTextPreference
+            app:dependency="authentication_enable"
+            app:key="authentication_user"
+            app:title="@string/authentication_user_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:dependency="authentication_enable"
+            app:key="authentication_password"
+            app:title="@string/authentication_password_title"
+            android:inputType="textPassword"
+            android:password="true"
+            android:imeOptions="flagNoExtractUi"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
