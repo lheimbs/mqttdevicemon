@@ -28,8 +28,9 @@
     <string name="message_data_summary">Device data to send</string>
 
     <string name="btn_launch_client">Test Mqtt Client</string>
-    <string name="btn_launch_client_kill">Disconnect testing Mqtt Client</string>
+    <string name="btn_kill_client">Disconnect testing Mqtt Client</string>
     <string name="btn_launch_service">Launch Mqtt Service detached</string>
+    <string name="btn_kill_service">Stop detached Mqtt Service</string>
 
     <string name="missing_settings">Switching to settings because both broker and topic need to be set!</string>
     <string name="settings_desc">Switch to settings</string>
@@ -47,4 +48,9 @@
     <string name="logging_publish">\nPublish message\'%s\' to topic %s…</string>
     <string name="logging_could_not_connect">Could not connect to broker at %s:%d…</string>
 
+    <!--  notification stuff  -->
+    <string name="channel_name">Mqtt Background Publish Service</string>
+    <string name="notification_title">Mqtt Background Publish Service Title</string>
+    <string name="notification_message">Mqtt Background Publish Service Message</string>
+    <string name="cancel_publisher">Stop publishing</string>
 </resources>

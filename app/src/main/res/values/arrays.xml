@@ -2,9 +2,13 @@
     <!-- Data Preference -->
     <string-array name="data_entries">
         <item>Battery</item>
+        <item>Battery charging state</item>
+        <item>Significant Battery level changes (Battery low vs. Battery okay)</item>
     </string-array>
 
     <string-array name="data_values">
-        <item>battery</item>
+        <item>battery_level</item>
+        <item>battery_charging_state</item>
+        <item>battery_sig_level</item>
     </string-array>
 </resources>
