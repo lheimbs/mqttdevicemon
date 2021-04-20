@@ -1,11 +1,15 @@
 package me.heimbs.mqttdevicemon;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -29,12 +33,18 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     public static boolean BAD_SETTINGS = false;
+    public final int requestId = 6666;
     public Mqtt3AsyncClient client = null;
     private Mqtt3BlockingClient blockingClient = null;
     private Handler handler = null;
     private Runnable publishMsg = null;
     public TextView loggingText;
     private Button clientBtn;
+    private Button serviceStartBtn;
+    private Button serviceStopBtn;
+    private Intent batteryStatus;
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
         loggingText.setMovementMethod(new ScrollingMovementMethod());
 
         clientBtn = findViewById(R.id.btn_launch_client);
+        serviceStartBtn = findViewById(R.id.btn_launch_srv);
+        serviceStopBtn = findViewById(R.id.btn_stop_srv);
+
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        batteryStatus = getApplicationContext().registerReceiver(null, intentFilter);
     }
 
     @Override
@@ -56,14 +71,8 @@ public class MainActivity extends AppCompatActivity {
         String broker = prefs.getString("connection_broker", "");
         String topic = prefs.getString("message_topic", "");
         String data_type = prefs.getString("message_data", "");
-        int interval = prefs.getInt("message_interval", 0);
+        long interval = prefs.getInt("message_interval", 0) * 60 * 1000;
         int port =  Integer.parseInt(prefs.getString("connection_port", "1883"));
-        if (port < 0 || port > 65535) {
-            Snackbar.make(findViewById(R.id.myCoordinatorLayout), String.format(getResources().getString(R.string.bad_port), port), Snackbar.LENGTH_LONG).show();
-            prefs.edit().putString("connection_port", "1883").apply();
-            port = 1883;
-        }
-        int finalPort = port;
 
         if (broker.equals("") || topic.equals("")) {
             MainActivity.BAD_SETTINGS = true;
@@ -71,15 +80,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = getApplicationContext().registerReceiver(null, ifilter);
-        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        float batteryPct = level * 100 / (float) scale;
-        String batteryPctStr = Float.toString(batteryPct);
+
 
         final TextView connection_text = findViewById(R.id.connection_text);
-        connection_text.setText(String.format(getResources().getString(R.string.connection_text), broker, finalPort));
+        connection_text.setText(String.format(getResources().getString(R.string.connection_text), broker, port));
         final TextView message_text = findViewById(R.id.message_text);
         message_text.setText(String.format(getResources().getString(R.string.message_text), data_type, topic, interval));
 
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             client = Mqtt3Client.builder()
                     .identifier("Android_" + UUID.randomUUID().toString())
                     .serverHost(broker)
-                    .serverPort(finalPort)
+                    .serverPort(port)
                     .buildAsync();
             blockingClient = client.toBlocking();
         }
@@ -96,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         publishMsg = new Runnable() {
             @Override
             public void run() {
+                String batteryPctStr = getBatteryLevel(batteryStatus);
                 loggingText.append(String.format(getResources().getString(R.string.logging_publish), batteryPctStr, topic));
                 blockingClient.publishWith().topic(topic).payload(batteryPctStr.getBytes()).send();
                 handler.postDelayed(this, interval * 1000);
@@ -116,13 +121,38 @@ public class MainActivity extends AppCompatActivity {
                 clientBtn.setText(R.string.btn_launch_client_kill);
                 try {
                     blockingClient.connect();
-                    loggingText.append(String.format(getResources().getString(R.string.logging_connect), broker, finalPort));
+                    loggingText.append(String.format(getResources().getString(R.string.logging_connect), broker, port));
                 } catch (Exception e) {
                     Log.e(TAG, e.toString());
-                    loggingText.append(String.format(getResources().getString(R.string.logging_could_not_connect), broker, finalPort));
+                    loggingText.append(String.format(getResources().getString(R.string.logging_could_not_connect), broker, port));
                     loggingText.append(e.toString());
                 }
                 handler.post(publishMsg);
+            }
+        });
+
+        Context context = getApplicationContext();
+        alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, PublishService.class);
+        alarmIntent = PendingIntent.getBroadcast(context, requestId, intent, 0);
+
+        serviceStartBtn.setOnClickListener(v -> {
+            Log.d(TAG, "serviceStartBtn clicked");
+            alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime(),
+                    interval, alarmIntent);
+            Log.i(TAG, String.format("Run service every %d m/s", interval));
+        });
+
+        serviceStopBtn.setOnClickListener(v -> {
+            Log.d(TAG, "serviceStopBtn clicked");
+            AlarmManager alarmManager =
+                    (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            PendingIntent pendingIntent =
+                    PendingIntent.getService(context, requestId, intent,
+                            PendingIntent.FLAG_NO_CREATE);
+            if (pendingIntent != null && alarmManager != null) {
+                alarmManager.cancel(pendingIntent);
             }
         });
     }
@@ -156,5 +186,12 @@ public class MainActivity extends AppCompatActivity {
             // Invoke the superclass to handle it.
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    public static String getBatteryLevel(Intent batteryStatus) {
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        int batteryPct = (int)( level * 100 / (float) scale);
+        return Integer.toString(batteryPct);
     }
 }

@@ -37,9 +37,13 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
-            androidx.preference.EditTextPreference editTextPreferencePort = getPreferenceManager().findPreference("connection_port");
+            final androidx.preference.EditTextPreference editTextPreferencePort = getPreferenceManager().findPreference("connection_port");
             if(editTextPreferencePort != null) {
                 editTextPreferencePort.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED));
+                editTextPreferencePort.setOnPreferenceChangeListener((preference, newValue) -> {
+                    int port = Integer.parseInt(newValue.toString());
+                    return port >= 0 && port <= 65535;
+                });
             }
 
             final androidx.preference.EditTextPreference editTextPreferencePassword = getPreferenceManager().findPreference("authentication_password");

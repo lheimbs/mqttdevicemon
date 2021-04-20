@@ -29,7 +29,8 @@
 
     <string name="btn_launch_client">Test Mqtt Client</string>
     <string name="btn_launch_client_kill">Disconnect testing Mqtt Client</string>
-    <string name="btn_launch_service">Launch Mqtt Service detached</string>
+    <string name="btn_launch_service">Launch Mqtt Service</string>
+    <string name="btn_stop_service">Stop Mqtt Service</string>
 
     <string name="missing_settings">Switching to settings because both broker and topic need to be set!</string>
     <string name="settings_desc">Switch to settings</string>

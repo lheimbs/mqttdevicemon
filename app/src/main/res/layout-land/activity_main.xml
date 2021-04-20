@@ -19,30 +19,6 @@
             android:layout_weight="1"
             tools:context=".MainActivity">
 
-            <Button
-                android:id="@+id/btn_launch_client"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="24dp"
-                android:text="@string/btn_launch_client"
-                app:layout_constraintBottom_toTopOf="@+id/btn_launch_srv"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <Button
-                android:id="@+id/btn_launch_srv"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="24dp"
-                android:text="@string/btn_launch_service"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
             <TextView
                 android:id="@+id/connection_text"
                 android:layout_width="0dp"
@@ -66,6 +42,48 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/connection_text" />
+
+            <Button
+                android:id="@+id/btn_launch_client"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="24dp"
+                android:text="@string/btn_launch_client"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="24dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <Button
+                    android:id="@+id/btn_launch_srv"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_launch_service" />
+
+                <Button
+                    android:id="@+id/btn_stop_srv"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_marginEnd="24dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_stop_service" />
+            </LinearLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
