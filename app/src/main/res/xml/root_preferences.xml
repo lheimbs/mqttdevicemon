@@ -22,6 +22,7 @@
         <SeekBarPreference
             app:key="message_interval"
             app:defaultValue="60"
+            app:min="1"
             android:max="300"
             app:showSeekBarValue="true"
             app:title="@string/message_interval_title" />
@@ -51,7 +52,6 @@
             app:key="authentication_password"
             app:title="@string/authentication_password_title"
             android:inputType="textPassword"
-            android:password="true"
             android:imeOptions="flagNoExtractUi"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>

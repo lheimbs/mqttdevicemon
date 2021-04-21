@@ -10,6 +10,10 @@ import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
+// TODO: Add more mqtt settings
+// TODO Add selection for battery safe setRepeating vs setExactAndAllowWhileIdle Alarms with warning
+// TODO Save password on EncryptedSharedPreferences
+
 public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

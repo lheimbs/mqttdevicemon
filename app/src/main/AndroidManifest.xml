@@ -28,11 +28,22 @@
                     android:value="me.heimbs.mqttdevicemon.MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+        <receiver
+            android:name=".PublisherAlarmReceiver"
+            android:process=":remote" />
+        <receiver android:name=".PublisherBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".PublishService"
+            android:exported="false" />
+
+
+    </application>
 </manifest>

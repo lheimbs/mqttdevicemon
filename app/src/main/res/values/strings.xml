@@ -36,7 +36,7 @@
     <string name="settings_desc">Switch to settings</string>
 
     <string name="connection_text">Using broker at %s with port %d.</string>
-    <string name="message_text">Publishing %s to topic %s every %d seconds.</string>
+    <string name="message_text">Publishing %s to topic %s every %d minutes.</string>
     <string name="bad_port">Broker port must not exceed the value range of [0, 65535], but was %d. Setting Port to default 1883.</string>
     <string name="could_connect">Connected to broker at %s:%d…</string>
     <string name="logging_view_hint">Logging of the mqtt connection…</string>
@@ -45,7 +45,11 @@
     <string name="logging_disconnect">\nDisconnect from %s</string>
     <string name="logging_disconnect_any">\nDisconnect from broker…</string>
     <string name="logging_connect">\nConnect to broker at %s:%d…</string>
-    <string name="logging_publish">\nPublish message\'%s\' to topic %s…</string>
-    <string name="logging_could_not_connect">Could not connect to broker at %s:%d…</string>
+    <string name="logging_publish">\nPublish message \'%s\' to topic %s…</string>
+    <string name="logging_could_not_connect">\nCould not connect to broker at %s:%d…</string>
 
+    <!--  alerts  -->
+    <string name="msg_service_started">\nPublish Service started!</string>
+    <string name="msg_service_stopped">\nPublish Service stopped!</string>
+    <string name="msg_service_not_running">\nPublish Service is not running…</string>
 </resources>
