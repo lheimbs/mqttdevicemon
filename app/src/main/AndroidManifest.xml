@@ -4,15 +4,19 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
+        android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MQTTDevMon">
-        <activity android:name="me.heimbs.mqttdevicemon.MainActivity">
+        <activity android:name="me.heimbs.mqttdevicemon.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +26,8 @@
         <activity
             android:name="me.heimbs.mqttdevicemon.SettingsActivity"
             android:label="@string/app_name"
-            android:parentActivityName="me.heimbs.mqttdevicemon.MainActivity">
+            android:parentActivityName="me.heimbs.mqttdevicemon.MainActivity"
+            android:exported="true">
                 <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="me.heimbs.mqttdevicemon.MainActivity" />
@@ -35,14 +40,16 @@
             android:name=".PublisherAlarmReceiver"
             android:process=":remote" />
         <receiver android:name=".PublisherBootReceiver"
-            android:enabled="false">
+            android:enabled="false"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <service
             android:name=".PublishService"
-            android:exported="false" />
+            android:permission="android.permission.SCHEDULE_EXACT_ALARM"
+            android:exported="true" />
 
 
     </application>

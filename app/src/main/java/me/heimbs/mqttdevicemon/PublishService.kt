@@ -1,105 +1,111 @@
-package me.heimbs.mqttdevicemon;
+package me.heimbs.mqttdevicemon
 
-import android.app.IntentService;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.util.Log;
+import me.heimbs.mqttdevicemon.MainActivity.Companion.getBatteryLevel
+import me.heimbs.mqttdevicemon.MainActivity.Companion.schedulePublishService
+import me.heimbs.mqttdevicemon.MainActivity.Companion.appendLog
+import android.app.IntentService
+import android.content.Context
+import android.content.Intent
+import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient
+import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth
+import android.content.SharedPreferences
+import me.heimbs.mqttdevicemon.PublishService
+import android.content.IntentFilter
+import android.util.Log
+import androidx.core.app.JobIntentService
+import androidx.preference.PreferenceManager
+import com.hivemq.client.mqtt.mqtt3.Mqtt3Client
+import me.heimbs.mqttdevicemon.MainActivity
+import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck
+import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode
+import me.heimbs.mqttdevicemon.R
+import java.lang.Exception
+import java.util.*
 
-import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
-
-import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
-import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
-import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
-import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
-
-import java.util.UUID;
-
-public class PublishService extends IntentService {
-    private static final String TAG = "PublishService";
-    private Intent batteryStatus;
-    private Mqtt3BlockingClient client;
-    private Mqtt3SimpleAuth simpleAuth = null;
-    private SharedPreferences prefs;
-
-    public PublishService() {
-        super("PublishService");
-    }
-
-    @Override
-    public void onCreate() {
-        Log.d(TAG, "onCreate");
-        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        batteryStatus = getApplicationContext().registerReceiver(null, intentFilter);
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String broker = prefs.getString("connection_broker", "");
-        String topic = prefs.getString("message_topic", "");
-        String data_type = prefs.getString("message_data", "");
-        int interval = prefs.getInt("message_interval", 60);
-        int port =  Integer.parseInt(prefs.getString("connection_port", "1883"));
-
+class PublishService : JobIntentService() {
+    private var batteryStatus: Intent? = null
+    private var client: Mqtt3BlockingClient? = null
+    private var simpleAuth: Mqtt3SimpleAuth? = null
+    private var prefs: SharedPreferences? = null
+    override fun onCreate() {
+        Log.d(TAG, "onCreate")
+        val intentFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        batteryStatus = applicationContext.registerReceiver(null, intentFilter)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val broker = prefs?.getString("connection_broker", "")
+        val topic = prefs?.getString("message_topic", "")
+        val dataType = prefs?.getString("message_data", "")
+        val interval = prefs?.getInt("message_interval", 60)
+        val port = prefs?.getString("connection_port", "1883")!!.toInt()
         client = Mqtt3Client.builder()
-                .identifier("Android_" + UUID.randomUUID().toString())
-                .serverHost(broker)
-                .serverPort(port)
-                .buildBlocking();
-
-        String username = prefs.getString("authentication_user", null);
-        String password = prefs.getString("authentication_password", null);
+            .identifier("Android_" + UUID.randomUUID().toString())
+            .serverHost(broker!!)
+            .serverPort(port)
+            .buildBlocking()
+        val username = prefs?.getString("authentication_user", null)
+        val password = prefs?.getString("authentication_password", null)
         if (username != null && password != null) {
             simpleAuth = Mqtt3SimpleAuth.builder()
-                    .username(username)
-                    .password(password.getBytes())
-                    .build();
+                .username(username)
+                .password(password.toByteArray())
+                .build()
         }
-        super.onCreate();
+        super.onCreate()
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        super.onDestroy();
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy")
+        super.onDestroy()
     }
 
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        Log.d(TAG, "onHandleIntent");
-        String batteryPercentage = MainActivity.getBatteryLevel(batteryStatus);
-        String topic = prefs.getString("message_topic", "");
-        Log.d(TAG, topic + ": " + batteryPercentage);
+    override fun onHandleWork(intent: Intent) {
+        onHandleIntent(intent)
+    }
+
+    private fun onHandleIntent(intent: Intent?) {
+        Log.d(TAG, "onHandleIntent")
+        val batteryPercentage = getBatteryLevel(batteryStatus)
+        val topic = prefs!!.getString("message_topic", "")
+        Log.d(TAG, "$topic: $batteryPercentage")
         try {
-            Log.d(TAG, "Trying to connect to broker...");
-            Mqtt3ConnAck connAckMessage = client.connectWith()
-                    .simpleAuth(simpleAuth)
-                    .send();
-            Log.d(TAG, String.format("Client connect msg %s", connAckMessage.toString()));
-            if (connAckMessage.getReturnCode() == Mqtt3ConnAckReturnCode.SUCCESS) {
-                client.publishWith()
-                        .topic(topic)
-                        .payload(batteryPercentage.getBytes())
-                        .send();
+            Log.d(TAG, "Trying to connect to broker...")
+            val connAckMessage = client!!.connectWith()
+                .simpleAuth(simpleAuth)
+                .send()
+            Log.d(TAG, String.format("Client connect msg %s", connAckMessage.toString()))
+            if (connAckMessage.returnCode == Mqtt3ConnAckReturnCode.SUCCESS) {
+                client!!.publishWith()
+                    .topic(topic!!)
+                    .payload(batteryPercentage.toByteArray())
+                    .send()
             } else {
-                Log.e(TAG, "Error connecting to broker: " + connAckMessage.getReturnCode().toString());
+                Log.e(TAG, "Error connecting to broker: " + connAckMessage.returnCode.toString())
             }
-            logToUser(String.format(getString(R.string.logging_publish), batteryPercentage, topic), this);
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
+            logToUser(
+                String.format(getString(R.string.logging_publish), batteryPercentage, topic),
+                this
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
         } finally {
-            client.disconnect();
+            client!!.disconnect()
         }
-        MainActivity.schedulePublishService(prefs.getInt("message_interval", 60), this);
+        schedulePublishService(prefs!!.getInt("message_interval", 60), this)
     }
 
-    public static void logToUser(String logString, Context context) {
-        Log.d(TAG, String.format("Log \'%s\' to user", logString));
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String saved = prefs.getString(MainActivity.LOG_KEY, "");
+    companion object {
 
-        String newLog = MainActivity.appendLog(saved, logString);
-        prefs.edit().putString(MainActivity.LOG_KEY, newLog).apply();
+        fun enqueueWork(context: Context, intent: Intent){
+            enqueueWork(context,PublishService::class.java, 1, intent)
+        }
+
+        private const val TAG = "PublishService"
+        fun logToUser(logString: String?, context: Context?) {
+            Log.d(TAG, String.format("Log \'%s\' to user", logString))
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+            val saved = prefs.getString(MainActivity.LOG_KEY, "")
+            val newLog = appendLog(saved, logString!!)
+            prefs.edit().putString(MainActivity.LOG_KEY, newLog).apply()
+        }
     }
 }

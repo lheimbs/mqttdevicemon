@@ -1,17 +1,18 @@
-package me.heimbs.mqttdevicemon;
+package me.heimbs.mqttdevicemon
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import me.heimbs.mqttdevicemon.PublishService
 
-public class PublisherAlarmReceiver extends BroadcastReceiver {
-    public static final int REQUEST_CODE = 12345;
-
+class PublisherAlarmReceiver : BroadcastReceiver() {
     // Triggered by the Alarm periodically (starts the service to run task)
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Intent i = new Intent(context, PublishService.class);
-        context.startService(i);
+    override fun onReceive(context: Context, intent: Intent) {
+        val i = Intent(context, PublishService::class.java)
+        context.startService(i)
+    }
+
+    companion object {
+        const val REQUEST_CODE = 12345
     }
 }
-

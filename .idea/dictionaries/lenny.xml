@@ -2,6 +2,7 @@
   <dictionary name="lenny">
     <words>
       <w>mqtt</w>
+      <w>userlog</w>
     </words>
   </dictionary>
 </component>

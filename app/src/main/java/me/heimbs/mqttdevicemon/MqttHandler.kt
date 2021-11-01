@@ -1,34 +1,26 @@
-package me.heimbs.mqttdevicemon;
+package me.heimbs.mqttdevicemon
 
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient
+import com.hivemq.client.mqtt.mqtt3.Mqtt3Client
+import java.util.*
 
-import java.util.UUID;
-
-public class MqttHandler {
-    private Mqtt3AsyncClient client;
-    private String username = null;
-    private String password = null;
-
-    public void initMqtt(String broker, int port) {
+class MqttHandler {
+    private var client: Mqtt3AsyncClient? = null
+    private var username: String? = null
+    private var password: String? = null
+    fun initMqtt(broker: String?, port: Int) {
         client = Mqtt3Client.builder()
             .identifier("Android_" + UUID.randomUUID().toString())
-            .serverHost(broker)
+            .serverHost(broker!!)
             .serverPort(port)
-            .buildAsync();
+            .buildAsync()
     }
 
-    public void setAuth(String user, String pass) {
-        username = user;
-        password = pass;
+    fun setAuth(user: String?, pass: String?) {
+        username = user
+        password = pass
     }
 
-    public void connectAsync() {
-
-    }
-
-    public void connectBlocking(){
-
-    }
+    fun connectAsync() {}
+    fun connectBlocking() {}
 }
